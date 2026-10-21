@@ -10,15 +10,33 @@ bool SdlWidgetList::reset(const std::string& title, size_t width, size_t height)
 	SDL_Renderer* renderer = nullptr;
 	SDL_Window* window = nullptr;
 	auto rc = SDL_CreateWindowAndRenderer(title.c_str(), w, h,
-	                                      SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_INPUT_FOCUS |
-	                                          SDL_WINDOW_ALWAYS_ON_TOP | SDL_WINDOW_UTILITY |
-	                                          SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS,
+	                                      SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_ALWAYS_ON_TOP |
+	                                          SDL_WINDOW_UTILITY,
 	                                      &window, &renderer);
 	_renderer = std::shared_ptr<SDL_Renderer>(renderer, SDL_DestroyRenderer);
 	_window = std::shared_ptr<SDL_Window>(window, SDL_DestroyWindow);
 	if (!rc)
 		widget_log_error(rc, "SDL_CreateWindowAndRenderer");
+	else
+		rc = updateScale();
 	return rc;
+}
+
+bool SdlWidgetList::updateScale()
+{
+	/* Re-read the density when drawing: moving between monitors can change it after creation. */
+	const float density = SDL_GetWindowPixelDensity(_window.get());
+	if (widget_log_error(density > 0.0f, "SDL_GetWindowPixelDensity"))
+		return false;
+	float scaleX = 0.0f;
+	float scaleY = 0.0f;
+	if (widget_log_error(SDL_GetRenderScale(_renderer.get(), &scaleX, &scaleY),
+	                     "SDL_GetRenderScale"))
+		return false;
+	if ((scaleX == density) && (scaleY == density))
+		return true;
+	const auto rc = SDL_SetRenderScale(_renderer.get(), density, density);
+	return !widget_log_error(rc, "SDL_SetRenderScale");
 }
 
 bool SdlWidgetList::visible() const
@@ -50,6 +68,8 @@ bool SdlWidgetList::update()
 	if (!visible())
 		return true;
 
+	if (!updateScale())
+		return false;
 	if (!clearWindow())
 		return false;
 	if (!updateInternal())

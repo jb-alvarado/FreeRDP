@@ -31,4 +31,7 @@ class SdlWidgetList
 	std::shared_ptr<SDL_Renderer> _renderer;
 	SdlButtonList _buttons;
 	SDL_Color _backgroundcolor{ 0x38, 0x36, 0x35, 0xff };
+
+  private:
+	[[nodiscard]] bool updateScale();
 };

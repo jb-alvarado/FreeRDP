@@ -966,7 +966,7 @@ bool SdlContext::drawToWindow(SdlWindow& window, const std::vector<SDL_Rect>& re
 
 		_localScale = { static_cast<float>(size.w) / static_cast<float>(gdi->width),
 			            static_cast<float>(size.h) / static_cast<float>(gdi->height) };
-		if (!window.drawScaledRects(surface, _localScale, rects))
+		if (!window.drawScaledRects(surface, _localScale, rects, true))
 			return false;
 	}
 	else
@@ -974,7 +974,7 @@ bool SdlContext::drawToWindow(SdlWindow& window, const std::vector<SDL_Rect>& re
 		SDL_Point offset{ 0, 0 };
 		if (freerdp_settings_get_bool(context()->settings, FreeRDP_UseMultimon))
 			offset = { window.offsetX(), window.offsetY() };
-		if (!window.drawRects(surface, offset, rects))
+		if (!window.drawRects(surface, offset, rects, true))
 			return false;
 	}
 
@@ -1259,8 +1259,6 @@ bool SdlContext::handleEvent(const SDL_WindowEvent& ev)
 			}
 			break;
 		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
-			if (!resizeToScale(window))
-				return false;
 			if (!window->fill())
 				return false;
 			if (!drawToWindow(*window))

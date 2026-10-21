@@ -37,7 +37,7 @@ SdlInputWidgetPairList::SdlInputWidgetPairList(const std::string& title,
 	assert(labels.size() == initial.size());
 	assert(labels.size() == flags.size());
 	const std::vector<int> buttonids = { INPUT_BUTTON_ACCEPT, INPUT_BUTTON_CANCEL };
-	const std::vector<std::string> buttonlabels = { "accept", "cancel" };
+	const std::vector<std::string> buttonlabels = { "OK", "Cancel" };
 
 	const size_t widget_width = 300;
 	const size_t widget_height = 50;

@@ -139,6 +139,10 @@ std::shared_ptr<SDL_Texture> SdlWidget::render_text(const std::string& text, SDL
 	dst = _rect;
 	dst.x += hpadding;
 	dst.w -= 2 * hpadding;
+	/* Keep text readable without stretching it to the full height of an input or button. */
+	const float textHeight = std::min(dst.h, 24.0f);
+	dst.y += (dst.h - textHeight) / 2.0f;
+	dst.h = textHeight;
 	const float scale = dst.h / src.h;
 	const float sws = (src.w) * scale;
 	const float dws = (dst.w) / scale;

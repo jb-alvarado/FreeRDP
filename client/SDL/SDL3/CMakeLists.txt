@@ -171,3 +171,7 @@ installwithrpath(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR} COMP
 install_freerdp_desktop("${MODULE_NAME}" "${SDL_CLIENT_UUID}")
 
 add_subdirectory(man)
+
+if(BUILD_TESTING)
+  add_subdirectory(test)
+endif()
